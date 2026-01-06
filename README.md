@@ -1,5 +1,3 @@
-📚 Open Knowledge — Alexandre D
-
 Bienvenue sur ce repository.
 
 Je m’appelle Alexandre D.
