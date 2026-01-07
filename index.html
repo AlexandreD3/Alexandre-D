@@ -1,120 +1,182 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Alexandre D — Ebooks & Ressources</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alexandre D — Ebooks & Ressources</title>
 
-<style>
-body{
-  margin:0;
-  font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background:#0b0c0f;
-  color:#e7ecf4;
-}
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:40px 20px;
-}
-h1{font-size:38px;margin-bottom:10px;}
-p{color:#a7b0c0;line-height:1.6}
-.book{
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:16px;
-  padding:20px;
-  margin-top:30px;
-  background:#0f1117;
-}
-.book-header{
-  display:flex;
-  gap:20px;
-  align-items:center;
-}
-.book img{
-  width:180px;
-  border-radius:12px;
-}
-.actions{
-  margin-top:10px;
-  display:flex;
-  gap:10px;
-}
-button,a{
-  background:#1a1d25;
-  border:1px solid rgba(255,255,255,.15);
-  color:white;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  text-decoration:none;
-}
-.viewer{
-  display:none;
-  margin-top:20px;
-  height:600px;
-  overflow:auto;
-}
-canvas{
-  width:100%;
-  margin-bottom:20px;
-}
-</style>
+  <style>
+    body{
+      margin:0;
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:#0b0c0f;
+      color:#e7ecf4;
+    }
+    .container{ max-width:1100px; margin:auto; padding:40px 20px; }
+    h1{ font-size:38px; margin-bottom:10px; }
+    p{ color:#a7b0c0; line-height:1.6; }
+
+    .book{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:20px;
+      margin-top:30px;
+      background:#0f1117;
+    }
+    .book-header{ display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+    .book img{ width:180px; border-radius:12px; }
+    .actions{ margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; }
+
+    button,a{
+      background:#1a1d25;
+      border:1px solid rgba(255,255,255,.15);
+      color:white;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      text-decoration:none;
+    }
+
+    .viewer{
+      display:none;
+      margin-top:20px;
+      height:600px;
+      overflow:auto; /* scroll molette */
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-top:12px;
+    }
+
+    .loading{
+      padding:12px;
+      color:#a7b0c0;
+      font-size:14px;
+    }
+
+    canvas{
+      width:100%;
+      margin-bottom:20px;
+      border-radius:12px;
+      background:#fff;
+    }
+  </style>
 </head>
 
 <body>
-<div class="container">
+  <div class="container">
+    <h1>Alexandre D</h1>
+    <p>
+      Cette page existe pour partager gratuitement des ebooks et ressources sur la fraude,
+      l’OSINT et la LCB-FT. Lecture en ligne ou téléchargement libre.
+    </p>
 
-<h1>Alexandre D</h1>
-<p>
-Cette page existe pour partager gratuitement des ebooks et ressources
-sur la fraude, l’OSINT et la LCB-FT.  
-Lecture en ligne ou téléchargement libre.
-</p>
+    <!-- BOOK 1 -->
+    <div class="book">
+      <div class="book-header">
+        <img src="assets/couverture-lcbft.png" alt="Couverture — LCB-FT">
+        <div>
+          <h3>La lutte contre le blanchiment des capitaux et le financement du terrorisme</h3>
+          <p>Comprendre le risque, décider avec discernement et défendre ses choix.</p>
 
-<!-- BOOK 1 -->
-<div class="book">
-  <div class="book-header">
-    <img src="assets/couverture-lcbft.png" alt="Couverture — LCB-FT">
-    <div>
-      <h3>La lutte contre le blanchiment des capitaux et le financement du terrorisme</h3>
-      <p>Comprendre le risque, décider avec discernement et défendre ses choix.</p>
-      <div class="actions">
-        <a href="pdf/lcbft.pdf" download>Télécharger</a>
-        <button onclick="toggle('v1')">Lire en ligne</button>
+          <div class="actions">
+            <a href="pdf/lcbft.pdf" download>Télécharger</a>
+            <button onclick="toggle('v1')">Lire en ligne</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="v1" class="viewer" data-pdf="pdf/lcbft.pdf">
+        <div class="loading">Clique sur “Lire en ligne” pour charger le PDF…</div>
       </div>
     </div>
   </div>
-  <div id="v1" class="viewer" data-pdf="pdf/lcbft.pdf"></div>
-</div>
 
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"></script>
+  <script>
+  (function () {
+    const WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.js";
 
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"></script>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.js';
-
-function toggle(id){
-  const v=document.getElementById(id);
-  v.style.display = v.style.display==='block'?'none':'block';
-  if(v.dataset.loaded)return;
-  v.dataset.loaded=true;
-  pdfjsLib.getDocument(v.dataset.pdf).promise.then(pdf=>{
-    for(let i=1;i<=pdf.numPages;i++){
-      pdf.getPage(i).then(p=>{
-        const c=document.createElement('canvas');
-        const ctx=c.getContext('2d');
-        const vp=p.getViewport({scale:1.5});
-        c.width=vp.width; c.height=vp.height;
-        v.appendChild(c);
-        p.render({canvasContext:ctx,viewport:vp});
-      });
+    function showMsg(v, msg) {
+      let el = v.querySelector(".loading");
+      if (!el) {
+        el = document.createElement("div");
+        el.className = "loading";
+        v.prepend(el);
+      }
+      el.textContent = msg;
     }
-  });
-}
-</script>
 
+    function fallbackIframe(v, url) {
+      v.innerHTML = `
+        <div class="loading">Lecture alternative (PDF intégré).</div>
+        <iframe src="${url}"
+          style="width:100%;height:560px;border:1px solid rgba(255,255,255,.12);border-radius:12px;">
+        </iframe>
+      `;
+    }
+
+    window.toggle = async function(id){
+      const v = document.getElementById(id);
+      v.style.display = (v.style.display === "block") ? "none" : "block";
+
+      // déjà chargé ? on arrête
+      if (v.dataset.loaded) return;
+      v.dataset.loaded = "true";
+
+      const pdfUrl = v.dataset.pdf;
+
+      // si PDF.js n'est pas dispo → fallback
+      if (typeof window.pdfjsLib === "undefined") {
+        showMsg(v, "PDF.js non chargé. Fallback iframe…");
+        fallbackIframe(v, pdfUrl);
+        return;
+      }
+
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER;
+      } catch (e) {
+        showMsg(v, "Worker PDF.js non configuré. Fallback iframe…");
+        fallbackIframe(v, pdfUrl);
+        return;
+      }
+
+      try {
+        showMsg(v, "Chargement du PDF…");
+
+        const pdf = await pdfjsLib.getDocument({ url: pdfUrl }).promise;
+
+        // Retire le message de chargement
+        const loading = v.querySelector(".loading");
+        if (loading) loading.remove();
+
+        // Render pages
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+
+          const c = document.createElement("canvas");
+          const ctx = c.getContext("2d");
+
+          // scale responsive
+          const baseVp = page.getViewport({ scale: 1.0 });
+          const maxWidth = Math.min(980, v.clientWidth - 20);
+          const scale = maxWidth / baseVp.width;
+
+          const vp = page.getViewport({ scale });
+
+          c.width = Math.floor(vp.width);
+          c.height = Math.floor(vp.height);
+
+          v.appendChild(c);
+          await page.render({ canvasContext: ctx, viewport: vp }).promise;
+        }
+      } catch (err) {
+        console.error(err);
+        showMsg(v, "Impossible de rendre le PDF via PDF.js. Fallback iframe…");
+        fallbackIframe(v, pdfUrl);
+      }
+    };
+  })();
+  </script>
 </body>
 </html>
+
