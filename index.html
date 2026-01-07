@@ -1,49 +1,135 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Alexandre D — Bibliothèque gratuite</title>
-  <link rel="stylesheet" href="./assets/style.css" />
-  <meta name="description" content="Ressources gratuites : livres, cours et méthodes (OSINT, LCB-FT, investigation, risk)." />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alexandre D — Ebooks & Ressources</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background:#0b0c0f;
+  color:#e7ecf4;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:40px 20px;
+}
+h1{font-size:38px;margin-bottom:10px;}
+p{color:#a7b0c0;line-height:1.6}
+.book{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:20px;
+  margin-top:30px;
+  background:#0f1117;
+}
+.book-header{
+  display:flex;
+  gap:20px;
+  align-items:center;
+}
+.book img{
+  width:180px;
+  border-radius:12px;
+}
+.actions{
+  margin-top:10px;
+  display:flex;
+  gap:10px;
+}
+button,a{
+  background:#1a1d25;
+  border:1px solid rgba(255,255,255,.15);
+  color:white;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  text-decoration:none;
+}
+.viewer{
+  display:none;
+  margin-top:20px;
+  height:600px;
+  overflow:auto;
+}
+canvas{
+  width:100%;
+  margin-bottom:20px;
+}
+</style>
 </head>
+
 <body>
-  <main class="container">
-    <header class="header">
-      <div class="badge">📚 Ressources gratuites · Open knowledge</div>
-      <h1>Bibliothèque</h1>
-      <p>
-        Je partage ici des livres et ressources pratiques (OSINT / LCB-FT / investigation / analyse du risque).
-        Objectif : du concret, lisible, réutilisable.
-      </p>
-      <p style="margin-top:6px;color:var(--muted);font-size:13px">
-        ⚠️ Usage éducatif & défensif. Aucun contenu n’encourage des pratiques illégales.
-      </p>
-    </header>
+<div class="container">
 
-    <section class="grid" aria-label="Livres disponibles">
-      <a class="card" href="./books/lcbft.html">
-        <img class="cover" src="./assets/cover-lcbft.png" alt="Couverture du livre LCB-FT" />
-        <div class="card-body">
-          <div class="title">La lutte contre le blanchiment des capitaux et le financement du terrorisme</div>
-          <div class="meta">Comprendre le risque · Décider avec discernement · Défendre ses choix</div>
-          <div class="cta"><span>Cliquer pour lire</span><span>→</span></div>
-        </div>
-      </a>
+<h1>Alexandre D</h1>
+<p>
+Cette page existe pour partager gratuitement des ebooks et ressources
+sur la fraude, l’OSINT et la LCB-FT.  
+Lecture en ligne ou téléchargement libre.
+</p>
 
-      <a class="card" href="./books/reprendre-le-controle.html">
-        <img class="cover" src="./assets/cover-reprendre.png" alt="Couverture du livre Reprendre le contrôle" />
-        <div class="card-body">
-          <div class="title">Reprendre le contrôle</div>
-          <div class="meta">Lecture directe en ligne + téléchargement PDF</div>
-          <div class="cta"><span>Cliquer pour lire</span><span>→</span></div>
-        </div>
-      </a>
-    </section>
+<!-- BOOK 1 -->
+<div class="book">
+  <div class="book-header">
+    <img src="assets/cover-lcbft.png">
+    <div>
+      <h3>La lutte contre le blanchiment des capitaux et le financement du terrorisme</h3>
+      <p>Comprendre le risque, décider avec discernement et défendre ses choix.</p>
+      <div class="actions">
+        <a href="pdf/lcbft.pdf" download>Télécharger</a>
+        <button onclick="toggle('v1')">Lire en ligne</button>
+      </div>
+    </div>
+  </div>
+  <div id="v1" class="viewer" data-pdf="pdf/lcbft.pdf"></div>
+</div>
 
-    <footer class="footer">
-      <div>Si tu repères une coquille ou si tu veux proposer une ressource : ouvre une issue ou une PR.</div>
-    </footer>
-  </main>
+<!-- BOOK 2 -->
+<div class="book">
+  <div class="book-header">
+    <img src="assets/cover-reprendre.png">
+    <div>
+      <h3>Reprendre le contrôle</h3>
+      <p>Clarté mentale, structure et reprise de contrôle.</p>
+      <div class="actions">
+        <a href="pdf/reprendre-le-controle.pdf" download>Télécharger</a>
+        <button onclick="toggle('v2')">Lire en ligne</button>
+      </div>
+    </div>
+  </div>
+  <div id="v2" class="viewer" data-pdf="pdf/reprendre-le-controle.pdf"></div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.js';
+
+function toggle(id){
+  const v=document.getElementById(id);
+  v.style.display = v.style.display==='block'?'none':'block';
+  if(v.dataset.loaded)return;
+  v.dataset.loaded=true;
+  pdfjsLib.getDocument(v.dataset.pdf).promise.then(pdf=>{
+    for(let i=1;i<=pdf.numPages;i++){
+      pdf.getPage(i).then(p=>{
+        const c=document.createElement('canvas');
+        const ctx=c.getContext('2d');
+        const vp=p.getViewport({scale:1.5});
+        c.width=vp.width; c.height=vp.height;
+        v.appendChild(c);
+        p.render({canvasContext:ctx,viewport:vp});
+      });
+    }
+  });
+}
+</script>
+
 </body>
 </html>
